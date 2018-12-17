@@ -49,21 +49,6 @@ def MAIN_ENV(args):
     ops.exportEnv(ops.setEnv("CROSS", ops.getEnv("CROSS_COMPILE")))
     ops.exportEnv(ops.setEnv("DESTDIR", install_tmp_dir))
 
-    cc_sysroot = ops.getEnv("CC_SYSROOT")
-
-    cflags = ""
-    cflags += " -I" + ops.path_join(cc_sysroot, 'usr/include')
-    cflags += " -I" + ops.path_join(iopc.getSdkPath(), 'usr/include/libpng')
-
-    ldflags = ""
-    ldflags += " -L" + ops.path_join(cc_sysroot, 'lib')
-    ldflags += " -L" + ops.path_join(cc_sysroot, 'usr/lib')
-    ldflags += " -L" + ops.path_join(iopc.getSdkPath(), 'lib')
-    ldflags += " -L" + ops.path_join(iopc.getSdkPath(), 'usr/lib')
-
-    libs = ""
-    libs += " -lpng -lz"
-
     #ops.exportEnv(ops.setEnv("LDFLAGS", ldflags))
     #ops.exportEnv(ops.setEnv("CFLAGS", cflags))
     #ops.exportEnv(ops.setEnv("LIBS", libs))
@@ -169,6 +154,21 @@ def MAIN_INSTALL(args):
     iopc.installBin(args["pkg_name"], ops.path_join(dst_lib_dir, "."), "lib")
     iopc.installBin(args["pkg_name"], dst_include_dir, "include")
     iopc.installBin(args["pkg_name"], ops.path_join(dst_pkgconfig_dir, '.'), "pkgconfig")
+
+    return False
+
+def MAIN_SDKENV(args):
+    set_global(args)
+
+    pkgsdk_include_dir = ops.path_join(iopc.getSdkPath(), 'usr/include/' + args["pkg_name"])
+    cflags = ""
+    cflags += " -I" + pkgsdk_include_dir
+    cflags += " -I" + ops.path_join(pkgsdk_include_dir, "freetype2")
+    iopc.add_includes(cflags)
+
+    libs = ""
+    libs += " -lfreetype"
+    iopc.add_libs(libs)
 
     return False
 
